@@ -52,3 +52,6 @@ group :development, :test do
   gem 'hirb-unicode'
   gem 'awesome_print'
 end
+
+# for problem of n+1
+gem 'bullet', group: :development

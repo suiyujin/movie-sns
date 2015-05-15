@@ -37,6 +37,9 @@ GEM
     binding_of_caller (0.7.2)
       debug_inspector (>= 0.0.1)
     builder (3.2.2)
+    bullet (4.14.7)
+      activesupport (>= 3.0.0)
+      uniform_notifier (~> 1.9.0)
     byebug (4.0.5)
       columnize (= 0.9.0)
     coderay (1.1.0)
@@ -452,6 +455,7 @@ GEM
       execjs (>= 0.3.0)
       json (>= 1.8.0)
     unicode-display_width (0.1.1)
+    uniform_notifier (1.9.0)
     yard (0.8.7.6)
 
 PLATFORMS
@@ -461,6 +465,7 @@ DEPENDENCIES
   awesome_print
   better_errors
   binding_of_caller
+  bullet
   coffee-rails (~> 4.0.0)
   hirb
   hirb-unicode

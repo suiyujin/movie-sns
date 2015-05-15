@@ -34,3 +34,9 @@ bower.json
 
 # Ignore pow environment settings
 .powenv
+
+# swap files and metadata file in OSX
+*.swp
+*.swo
+*~
+.DS_Store

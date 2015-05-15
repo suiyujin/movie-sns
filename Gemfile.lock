@@ -52,6 +52,10 @@ GEM
     erubis (2.7.0)
     execjs (2.5.2)
     hike (1.2.3)
+    hirb (0.7.3)
+    hirb-unicode (0.0.5)
+      hirb (~> 0.5)
+      unicode-display_width (~> 0.1.1)
     i18n (0.7.0)
     jbuilder (2.2.13)
       activesupport (>= 3.0.0, < 5)
@@ -447,15 +451,19 @@ GEM
     uglifier (2.7.1)
       execjs (>= 0.3.0)
       json (>= 1.8.0)
+    unicode-display_width (0.1.1)
     yard (0.8.7.6)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  awesome_print
   better_errors
   binding_of_caller
   coffee-rails (~> 4.0.0)
+  hirb
+  hirb-unicode
   jbuilder (~> 2.0)
   jquery-rails
   mysql2

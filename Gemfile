@@ -55,3 +55,8 @@ end
 
 # for problem of n+1
 gem 'bullet', group: :development
+
+# Authentication
+gem 'devise'
+gem 'omniauth-twitter'
+gem 'dotenv-rails'

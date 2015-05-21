@@ -1,0 +1,39 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Movie:</strong>
+  <%= @ajax_test.movie_id %>
+</p>
+
+<p>
+  <strong>Title:</strong>
+  <%= @ajax_test.title %>
+</p>
+
+<p>
+  <strong>Description:</strong>
+  <%= @ajax_test.description %>
+</p>
+
+<p>
+  <strong>Url:</strong>
+  <%= @ajax_test.url %>
+</p>
+
+<p>
+  <strong>Thumbnail url:</strong>
+  <%= @ajax_test.thumbnail_url %>
+</p>
+
+<p>
+  <strong>Thumbnail path:</strong>
+  <%= @ajax_test.thumbnail_path %>
+</p>
+
+<p>
+  <strong>User:</strong>
+  <%= @ajax_test.user_id %>
+</p>
+
+<%= link_to 'Edit', edit_ajax_test_path(@ajax_test) %> |
+<%= link_to 'Back', ajax_tests_path %>

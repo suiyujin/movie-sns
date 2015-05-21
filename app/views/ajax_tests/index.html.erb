@@ -1,0 +1,37 @@
+<h1>Listing ajax_tests</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Movie</th>
+      <th>Title</th>
+      <th>Description</th>
+      <th>Url</th>
+      <th>Thumbnail url</th>
+      <th>Thumbnail path</th>
+      <th>User</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @ajax_tests.each do |ajax_test| %>
+      <tr>
+        <td><%= ajax_test.movie_id %></td>
+        <td><%= ajax_test.title %></td>
+        <td><%= ajax_test.description %></td>
+        <td><%= ajax_test.url %></td>
+        <td><%= ajax_test.thumbnail_url %></td>
+        <td><%= ajax_test.thumbnail_path %></td>
+        <td><%= ajax_test.user_id %></td>
+        <td><%= link_to 'Show', ajax_test %></td>
+        <td><%= link_to 'Edit', edit_ajax_test_path(ajax_test) %></td>
+        <td><%= link_to 'Destroy', ajax_test, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Ajax test', new_ajax_test_path %>

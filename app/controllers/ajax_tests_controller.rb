@@ -22,6 +22,15 @@ class AjaxTestsController < ApplicationController
 
   def create
     @ajax_test = AjaxTest.new(ajax_test_params)
+
+    # test用にurl以外は自動で追加
+    @ajax_test.movie_id = 'A2Stest'
+    @ajax_test.title = 'dougano taitoru'
+    @ajax_test.description = 'dougano setumeibun'
+    @ajax_test.thumbnail_url = 'http://sample.com/thumbnail'
+    @ajax_test.thumbnail_path = 'img/thumb/test.jpg'
+    @ajax_test.user_id = current_user.id
+
     @ajax_test.save
     respond_with(@ajax_test)
   end

@@ -3,9 +3,36 @@ class AjaxTestsController < ApplicationController
 
   respond_to :html
 
+  def search
+    @ajax_test = AjaxTest.new(ajax_test_search_params)
+    keywords = @ajax_test.keywords
+
+    # urlのみの場合はその動画があるか調べる
+    if keywords.blank? || keywords =~ /^\s+$/
+      result = ''
+    elsif keywords =~ /^http:\/\/[^\s]+$/
+      result = AjaxTest.find_by(url: keywords)
+    elsif
+      query = keywords.split(' ').map { |keyword| "title like '%#{keyword}%'" }
+      result = AjaxTest.where(query.join(' AND '))
+    end
+
+    if result.blank?
+      res = {
+        result: false,
+        data: nil
+      }
+    else
+      res = {
+        result: true,
+        data: result
+      }
+    end
+    render json: res
+  end
+
   def index
-    @ajax_tests = AjaxTest.all
-    respond_with(@ajax_tests)
+    @ajax_test = AjaxTest.new
   end
 
   def show
@@ -52,5 +79,9 @@ class AjaxTestsController < ApplicationController
 
     def ajax_test_params
       params.require(:ajax_test).permit(:movie_id, :title, :description, :url, :thumbnail_url, :thumbnail_path, :user_id)
+    end
+
+    def ajax_test_search_params
+      params.require(:ajax_test).permit(:keywords)
     end
 end

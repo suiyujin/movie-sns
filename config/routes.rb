@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get 'ajax_tests/search', to: 'ajax_tests#search'
   resources :ajax_tests
 
   devise_for :users, path_names: { sign_in: "login", sign_out: "logout"},

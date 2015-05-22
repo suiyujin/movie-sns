@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150522040747) do
+ActiveRecord::Schema.define(version: 20150522060709) do
 
   create_table "ajax_tests", force: true do |t|
     t.string   "movie_id"
@@ -26,6 +26,10 @@ ActiveRecord::Schema.define(version: 20150522040747) do
   end
 
   add_index "ajax_tests", ["user_id"], name: "index_ajax_tests_on_user_id", using: :btree
+
+  create_table "categories", force: true do |t|
+    t.string "name"
+  end
 
   create_table "movies", force: true do |t|
     t.string   "movie_id"

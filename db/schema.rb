@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150522104111) do
+ActiveRecord::Schema.define(version: 20150522114617) do
 
   create_table "ajax_tests", force: true do |t|
     t.string   "movie_id"
@@ -70,8 +70,6 @@ ActiveRecord::Schema.define(version: 20150522104111) do
   add_index "nicovideo_categories", ["category_id"], name: "index_nicovideo_categories_on_category_id", using: :btree
 
   create_table "relations", force: true do |t|
-    t.integer  "good_count",            default: 0,   null: false
-    t.integer  "bad_count",             default: 0,   null: false
     t.float    "similarity", limit: 24, default: 0.0, null: false
     t.integer  "movie1_id",                           null: false
     t.integer  "movie2_id",                           null: false

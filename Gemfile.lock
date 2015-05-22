@@ -29,6 +29,7 @@ GEM
       tzinfo (~> 1.1)
     acts-as-taggable-on (3.5.0)
       activerecord (>= 3.2, < 5)
+    acts_as_commentable (4.0.2)
     anbt-sql-formatter (0.0.3)
     arel (5.0.1.20140414130214)
     awesome_print (1.6.1)
@@ -192,6 +193,7 @@ PLATFORMS
 
 DEPENDENCIES
   acts-as-taggable-on (~> 3.4)
+  acts_as_commentable
   awesome_print
   better_errors
   binding_of_caller

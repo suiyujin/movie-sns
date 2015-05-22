@@ -63,3 +63,6 @@ gem 'dotenv-rails'
 
 # Tag
 gem 'acts-as-taggable-on', '~> 3.4'
+
+# Comment
+gem 'acts_as_commentable'

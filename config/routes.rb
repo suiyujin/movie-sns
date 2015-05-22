@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  resources :relations
+
   resources :movies
 
   get 'ajax_tests/search', to: 'ajax_tests#search'

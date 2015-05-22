@@ -4,6 +4,7 @@ class Relation < ActiveRecord::Base
   belongs_to :user
 
   acts_as_commentable
+  acts_as_votable
 
   # すでにDBに存在する組み合わせは登録しない
   validates :movie1_id, uniqueness: { scope: :movie2_id }

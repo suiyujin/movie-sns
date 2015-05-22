@@ -6,7 +6,7 @@ class User < ActiveRecord::Base
          :omniauthable, omniauth_providers: [:twitter]
   has_many :relations
   has_many :comments
-  has_many :movies
+  has_many :movies, dependent: :destroy
 
   validates :name, presence: true
 

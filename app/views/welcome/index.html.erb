@@ -1,4 +1,12 @@
 <h1>Welcome#index</h1>
 <p>Find me in app/views/welcome/index.html.erb</p>
 
-<%= link_to "Ajax Test", ajax_tests_path %>
+<% if user_signed_in? %>
+  Logged in as <strong><%= current_user.name %></strong>.
+  <%= link_to 'Change Profile', edit_user_registration_path %><br>
+  <p><%= link_to 'Go!', movies_path %></p>
+<% else %>
+  <%= link_to "Sign up", new_user_registration_path %> |
+  <%= link_to "Log in", new_user_session_path %> |
+  <%= link_to "Log in with Twitter", user_omniauth_authorize_path(:twitter) %>
+<% end %>

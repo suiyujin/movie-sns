@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150522102225) do
+ActiveRecord::Schema.define(version: 20150522104111) do
 
   create_table "ajax_tests", force: true do |t|
     t.string   "movie_id"
@@ -55,7 +55,12 @@ ActiveRecord::Schema.define(version: 20150522102225) do
     t.string   "thumbnail_path"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "category_id",    null: false
+    t.integer  "user_id",        null: false
   end
+
+  add_index "movies", ["category_id"], name: "index_movies_on_category_id", using: :btree
+  add_index "movies", ["user_id"], name: "index_movies_on_user_id", using: :btree
 
   create_table "nicovideo_categories", force: true do |t|
     t.string  "name"

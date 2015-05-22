@@ -60,3 +60,6 @@ gem 'bullet', group: :development
 gem 'devise'
 gem 'omniauth-twitter'
 gem 'dotenv-rails'
+
+# Tag
+gem 'acts-as-taggable-on', '~> 3.4'

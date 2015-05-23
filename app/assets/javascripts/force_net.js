@@ -127,8 +127,8 @@ $( function(){
         .size( [ width, height ] )
         .nodes( data.movies )
         .links( data.relations )
-        .linkDistance( 200 )
-        .charge( -200 )
+        .linkDistance( 300 )
+        .charge( -120 )
         .on( "tick", tick );
 
     var drag_line = vis.append( "line" )

@@ -127,20 +127,24 @@ $( function(){
           .attr( "class", "drag_line_hidden" );
 
         if ( !mouseup_node ) {
-          /*
+          var result = prompt( "登録したい動画のURLを入力してください", "http://" );
 
-          var point = d3.mouse(this),
-            node1 = {x: point[0], y: point[1]},
-            n = nodes.push(node1);
-            node2 = {x: point[0], y: point[1]+1},
-            n = nodes.push(node2);
+          if( result ){
 
-          selected_node = node;
-          selected_link = null;
-          
-          links.push({source: mousedown_node, target: node1});
-          links.push({source: mousedown_node, target: node2});
-          */
+            $.ajax({
+              type: "POST",
+              url: "/movies",
+              data: {
+                movie:{ "url":        result }
+              },
+              success: function( json ){
+                 alert( json );
+              }
+            });
+
+          }else{
+            console.log(" CANCEL が押された");
+          }
         }
 
         redraw();

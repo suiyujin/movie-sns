@@ -13,7 +13,6 @@ $( function(){
     } );
 
   $( 'form#search_movies' ).bind( "ajax:success", function( evt, data, status, xhr ){
-    console.log( data );
     if( data.result ){
       $( "#force_net_area>svg" ).remove();
 
@@ -22,49 +21,6 @@ $( function(){
       };
       relations_map = {
         size: 0
-      };
-
-      var temp_data = {
-        "result": true,
-        "data": {
-          movies: [
-            {
-              "id":     1,
-              "title":        "【ラブライブ！】Printemps「Pure girls project」試聴動画",
-              "description":  "『ラブライブ！』ユニットシングル 2nd session Pure girls project Printemps〜高坂穂乃果(新田恵海)、南ことり(内田 彩)、小泉花陽(久保ユリカ) ",
-              "url":          "https://www.youtube.com/watch?v=gBVCa8rZmGg",
-              "thumbnail_url":"https://i.ytimg.com/vi/gBVCa8rZmGg/mqdefault.jpg"
-            },
-            {
-              "id":     2,
-              "title":        "【ラブライブ！】Printemps「Pure girls project」試聴動画",
-              "description":  "『ラブライブ！』ユニットシングル 2nd session Pure girls project Printemps〜高坂穂乃果(新田恵海)、南ことり(内田 彩)、小泉花陽(久保ユリカ) ",
-              "url":          "https://www.youtube.com/watch?v=gBVCa8rZmGg",
-              "thumbnail_url":"https://i.ytimg.com/vi/gBVCa8rZmGg/mqdefault.jpg"
-            },
-            {
-              "id":     3,
-              "title":        "【ラブライブ！】Printemps「Pure girls project」試聴動画",
-              "description":  "『ラブライブ！』ユニットシングル 2nd session Pure girls project Printemps〜高坂穂乃果(新田恵海)、南ことり(内田 彩)、小泉花陽(久保ユリカ) ",
-              "url":          "https://www.youtube.com/watch?v=gBVCa8rZmGg",
-              "thumbnail_url":"https://i.ytimg.com/vi/gBVCa8rZmGg/mqdefault.jpg"
-            }
-          ],
-          relations:[
-            {
-              "movie1_id":    1,
-              "movie2_id":    2
-            },
-            {
-              "movie1_id":    2,
-              "movie2_id":    3
-            },
-            {
-              "movie1_id":    3,
-              "movie2_id":    1
-            }
-          ]
-        }
       };
 
       data.data.movies.forEach( function( movie, index ){
@@ -80,7 +36,8 @@ $( function(){
 
         relations.push( {
           "source": movies_map[ relation.movie1_id ],
-          "target": movies_map[ relation.movie2_id ]
+          "target": movies_map[ relation.movie2_id ],
+          "comments": relation.comments
         } );
       });
 
@@ -90,7 +47,7 @@ $( function(){
     }
   })
 
-  function show_force( data ){
+  function show_force( graph ){
     var width = 1000;
     var height = 600;
     var color = d3.scale.category20();
@@ -125,10 +82,9 @@ $( function(){
 
     var force = d3.layout.force()
         .size( [ width, height ] )
-        .nodes( data.movies )
-        .links( data.relations )
-        .linkDistance( 200 )
-        .charge( -200 )
+        .nodes( graph.movies )
+        .links( graph.relations )
+        .linkDistance( 300 )
         .on( "tick", tick );
 
     var drag_line = vis.append( "line" )
@@ -171,20 +127,52 @@ $( function(){
           .attr( "class", "drag_line_hidden" );
 
         if ( !mouseup_node ) {
-          /*
+          var result = prompt( "登録したい動画のURLを入力してください", "http://" );
+          var node = mousedown_node;
 
-          var point = d3.mouse(this),
-            node1 = {x: point[0], y: point[1]},
-            n = nodes.push(node1);
-            node2 = {x: point[0], y: point[1]+1},
-            n = nodes.push(node2);
+          if( result ){
 
-          selected_node = node;
-          selected_link = null;
-          
-          links.push({source: mousedown_node, target: node1});
-          links.push({source: mousedown_node, target: node2});
-          */
+            $.ajax({
+              type: "POST",
+              url: "/movies",
+              data: {
+                movie:{
+                  "url":        result,
+                  "source_id":  mousedown_node.id
+                }
+              },
+              success: function( json ){
+                console.log( json.data.movies[0] );
+                /*
+
+                if (!mouseup_node) {
+                  // add node
+                  var point = d3.mouse(this),
+                    node = {x: point[0], y: point[1]},
+                    n = nodes.push(node);
+
+                  // select new node
+                  selected_node = node;
+                  selected_link = null;
+                  
+                  // add link to mousedown node
+                  links.push({source: mousedown_node, target: node});
+                }
+                */
+
+                nodes.push( json.data.movies[0] );
+
+                movies_map[ json.data.movies[0].id ] = movies_map.size;
+                movies_map.size ++;
+
+
+                redraw();
+              }
+            });
+
+          }else{
+            console.log(" CANCEL が押された");
+          }
         }
 
         redraw();
@@ -226,6 +214,11 @@ $( function(){
 
       link.enter().insert( "line", ".node" )
           .attr( "class", "link" )
+          .style( "stroke-width", function(d){
+            if( d.comments.length > 0 )
+              return 20;
+            return 5;
+          } )
           .on( "mousedown", function(d){ 
               mousedown_link = d; 
               if (mousedown_link == selected_link) selected_link = null;
@@ -235,6 +228,20 @@ $( function(){
             } )
           .on( "mouseover", function(d){
             // todo: いいね、悪いねとかを表示する
+          } )
+          .on( "click", function(d){
+            var detail_dom = d3.select( "#detail_area" )
+              .style( "top", ( d.source.y + d.target.y )/2  + "px" )
+              .style( "left", ( d.source.x + d.target.x )/2 + "px" );
+
+            detail_dom.selectAll( "div" ).remove();
+
+            d.comments.forEach( function( comment ){
+              detail_dom.append( "div" )
+                .text( comment.comment );
+            } );
+
+            $( "#detail_area" ).show( 500 );
           } );
 
       link.exit().remove();
@@ -252,8 +259,9 @@ $( function(){
           .attr( "width", pic_width )
           .attr( "height", pic_height )
           .on( "click", function(d){
-
-            var detail_dom = d3.select( "#detail_area" );
+            var detail_dom = d3.select( "#detail_area" )
+              .style( "top", d.y + "px" )
+              .style( "left", d.x + "px" );
 
             detail_dom.selectAll( "a,div" ).remove();
             detail_dom.append( "a" )

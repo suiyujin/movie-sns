@@ -18,6 +18,15 @@ end
 User.create(email: 'test@test.com',
            password: 'password',
            password_confirmation: 'password')
+User.create(email: 'takeda@takeda.com',
+           password: 'takedatakeda',
+           password_confirmation: 'takedatakeda')
+User.create(email: 'higashi@higashi.com',
+           password: 'higashihigashi',
+           password_confirmation: 'higashihigashi')
+User.create(email: 'masaki@masaki.com',
+           password: 'masakimasaki',
+           password_confirmation: 'masakimasaki')
 
 Movie.create(movie_id: 'gBVCa8rZmGg',
            title: "【ラブライブ！】Printemps「Pure girls project」試聴動画",

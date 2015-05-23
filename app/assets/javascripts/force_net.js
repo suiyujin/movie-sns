@@ -13,6 +13,7 @@ $( function(){
     } );
 
   $( 'form#search_movies' ).bind( "ajax:success", function( evt, data, status, xhr ){
+    console.log( data );
     if( data.result ){
       $( "#force_net_area>svg" ).remove();
 
@@ -66,14 +67,14 @@ $( function(){
         }
       };
 
-      temp_data.data.movies.forEach( function( movie, index ){
+      data.data.movies.forEach( function( movie, index ){
         movies_map[ movie.id ] = movies_map.size;
         movies_map.size ++;
       });
 
       var relations = [];
 
-      temp_data.data.relations.forEach( function( relation, index ){
+      data.data.relations.forEach( function( relation, index ){
         relations_map[ relation.id ] = relations_map.size;
         relations_map.size ++;
 
@@ -83,9 +84,9 @@ $( function(){
         } );
       });
 
-      temp_data.data.relations = relations;
+      data.data.relations = relations;
 
-      show_force( temp_data.data );
+      show_force( data.data );
     }
   })
 

@@ -1,0 +1,34 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Good count:</strong>
+  <%= @relation.good_count %>
+</p>
+
+<p>
+  <strong>Bad count:</strong>
+  <%= @relation.bad_count %>
+</p>
+
+<p>
+  <strong>Similarity:</strong>
+  <%= @relation.similarity %>
+</p>
+
+<p>
+  <strong>Movie:</strong>
+  <%= @relation.movie %>
+</p>
+
+<p>
+  <strong>Movie:</strong>
+  <%= @relation.movie %>
+</p>
+
+<p>
+  <strong>User:</strong>
+  <%= @relation.user %>
+</p>
+
+<%= link_to 'Edit', edit_relation_path(@relation) %> |
+<%= link_to 'Back', relations_path %>

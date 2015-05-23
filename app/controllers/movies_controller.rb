@@ -4,20 +4,58 @@ class MoviesController < ApplicationController
   respond_to :html
 
   def search
-    @movie = Movie.new( movie_search_params )
+    @movie = Movie.new(movie_search_params)
     keywords = @movie.keywords
 
     # urlのみの場合はその動画があるか調べる
     if keywords.blank? || keywords =~ /^\s+$/
-      result = ''
-    elsif keywords =~ /^http:\/\/[^\s]+$/
-      result = Movie.find_by(url: keywords)
+      results = ''
+    elsif keywords =~ /^(http:|https:)\/\/[^\s]+$/
+      results = Movie.find_by(url: keywords)
     elsif
       query = keywords.split(' ').map { |keyword| "title like '%#{keyword}%'" }
-      result = Movie.where(query.join(' AND '))
+      results = Movie.where(query.join(' AND '))
     end
 
-    if result.blank?
+    # Json整形
+    movies = results.map do |result|
+      {
+        id: result.id,
+        title: result.title,
+        description: result.description,
+        url: result.url,
+        thumbnail_url: result.thumbnail_url,
+        thumbnail_path: result.thumbnail_path,
+        category_name: result.category.name,
+        user_name: result.user.name
+      }
+    end
+
+    relations_by_movies = Array.new
+    results.each do |result|
+      relations_by_movies << result.relations1.map do |relation|
+        {
+          relation: relation,
+          comments: relation.comments
+        }
+      end
+    end
+
+    relations = Array.new
+    relations_by_movies.each do |relations_by_movie|
+      relations_by_movie.each do |relation_by_movie|
+        relations << {
+          id: relation_by_movie[:relation].id,
+          similarity: relation_by_movie[:relation].similarity,
+          movie1_id: relation_by_movie[:relation].movie1_id,
+          movie2_id: relation_by_movie[:relation].movie2_id,
+          user_name: relation_by_movie[:relation].user.name,
+          comments: relation_by_movie[:comments]
+        }
+      end
+    end
+
+    if results.blank?
       res = {
         result: false,
         data: nil
@@ -25,7 +63,10 @@ class MoviesController < ApplicationController
     else
       res = {
         result: true,
-        data: result
+        data: {
+          movies: movies,
+          relations: relations
+        }
       }
     end
     render json: res

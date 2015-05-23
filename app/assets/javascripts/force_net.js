@@ -84,7 +84,8 @@ $( function(){
         .size( [ width, height ] )
         .nodes( graph.movies )
         .links( graph.relations )
-        .linkDistance( 300 )
+        .linkDistance( 200 )
+        .charge( -800 )
         .on( "tick", tick );
 
     var drag_line = vis.append( "line" )

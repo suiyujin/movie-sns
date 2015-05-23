@@ -17,6 +17,15 @@ class MoviesController < ApplicationController
       results = Movie.where(query.join(' AND '))
     end
 
+    # 関連があれば、関連先の動画を追加
+    results.each do |result|
+      result.relations1.each do |relation1|
+        unless results.find { |result| result.id == relation1.movie2_id }
+          results.push(Movie.find(relation1.movie2_id))
+        end
+      end
+    end
+
     # Json整形
     movies = results.map do |result|
       {

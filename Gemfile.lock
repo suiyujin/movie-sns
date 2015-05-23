@@ -31,6 +31,7 @@ GEM
       activerecord (>= 3.2, < 5)
     acts_as_commentable (4.0.2)
     acts_as_votable (0.10.0)
+    addressable (2.3.8)
     anbt-sql-formatter (0.0.3)
     arel (5.0.1.20140414130214)
     awesome_print (1.6.1)
@@ -202,6 +203,7 @@ DEPENDENCIES
   acts-as-taggable-on (~> 3.4)
   acts_as_commentable
   acts_as_votable (~> 0.10.0)
+  addressable
   awesome_print
   better_errors
   binding_of_caller
@@ -213,6 +215,7 @@ DEPENDENCIES
   hirb-unicode
   jbuilder (~> 2.0)
   jquery-rails
+  json
   mysql2
   omniauth-twitter
   pry-byebug

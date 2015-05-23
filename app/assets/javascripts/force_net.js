@@ -1,17 +1,101 @@
 $( function(){
-  $('form#search_movies').bind("ajax:success", function(evt, data, status, xhr){
-    $res_json = data;
-    console.log(data.data)
-    
-    show_force();
+  var movies_map = {
+    size: 0
+  };
+  var relations_map = {
+    size: 0
+  };
 
-    $( this ).remove();
+  $( "#detail_area" ).hide();
+  $( "#detail_area>button" )
+    .click( function(){
+      $( "#detail_area" ).hide( 500 );
+    } );
+
+  $( 'form#search_movies' ).bind( "ajax:success", function( evt, data, status, xhr ){
+    console.log( data );
+    if( data.result ){
+      $( "#force_net_area>svg" ).remove();
+
+      movies_map = {
+        size: 0
+      };
+      relations_map = {
+        size: 0
+      };
+
+      var temp_data = {
+        "result": true,
+        "data": {
+          movies: [
+            {
+              "id":     1,
+              "title":        "【ラブライブ！】Printemps「Pure girls project」試聴動画",
+              "description":  "『ラブライブ！』ユニットシングル 2nd session Pure girls project Printemps〜高坂穂乃果(新田恵海)、南ことり(内田 彩)、小泉花陽(久保ユリカ) ",
+              "url":          "https://www.youtube.com/watch?v=gBVCa8rZmGg",
+              "thumbnail_url":"https://i.ytimg.com/vi/gBVCa8rZmGg/mqdefault.jpg"
+            },
+            {
+              "id":     2,
+              "title":        "【ラブライブ！】Printemps「Pure girls project」試聴動画",
+              "description":  "『ラブライブ！』ユニットシングル 2nd session Pure girls project Printemps〜高坂穂乃果(新田恵海)、南ことり(内田 彩)、小泉花陽(久保ユリカ) ",
+              "url":          "https://www.youtube.com/watch?v=gBVCa8rZmGg",
+              "thumbnail_url":"https://i.ytimg.com/vi/gBVCa8rZmGg/mqdefault.jpg"
+            },
+            {
+              "id":     3,
+              "title":        "【ラブライブ！】Printemps「Pure girls project」試聴動画",
+              "description":  "『ラブライブ！』ユニットシングル 2nd session Pure girls project Printemps〜高坂穂乃果(新田恵海)、南ことり(内田 彩)、小泉花陽(久保ユリカ) ",
+              "url":          "https://www.youtube.com/watch?v=gBVCa8rZmGg",
+              "thumbnail_url":"https://i.ytimg.com/vi/gBVCa8rZmGg/mqdefault.jpg"
+            }
+          ],
+          relations:[
+            {
+              "movie1_id":    1,
+              "movie2_id":    2
+            },
+            {
+              "movie1_id":    2,
+              "movie2_id":    3
+            },
+            {
+              "movie1_id":    3,
+              "movie2_id":    1
+            }
+          ]
+        }
+      };
+
+      data.data.movies.forEach( function( movie, index ){
+        movies_map[ movie.id ] = movies_map.size;
+        movies_map.size ++;
+      });
+
+      var relations = [];
+
+      data.data.relations.forEach( function( relation, index ){
+        relations_map[ relation.id ] = relations_map.size;
+        relations_map.size ++;
+
+        relations.push( {
+          "source": movies_map[ relation.movie1_id ],
+          "target": movies_map[ relation.movie2_id ]
+        } );
+      });
+
+      data.data.relations = relations;
+
+      show_force( data.data );
+    }
   })
 
-  function show_force(){
-    var width = 500,
-    height = 500,
-    color = d3.scale.category20();
+  function show_force( data ){
+    var width = 1000;
+    var height = 600;
+    var color = d3.scale.category20();
+    var pic_width = 120;
+    var pic_height = 60;
 
     var selected_node = null;
     var selected_link = null;
@@ -41,9 +125,9 @@ $( function(){
 
     var force = d3.layout.force()
         .size( [ width, height ] )
-        .nodes( [{ "name":"test"}, {"name":"test"}] )
-        .links( [{ "source":0, "target":1 }] )
-        .linkDistance( 50 )
+        .nodes( data.movies )
+        .links( data.relations )
+        .linkDistance( 200 )
         .charge( -200 )
         .on( "tick", tick );
 
@@ -66,7 +150,6 @@ $( function(){
 
     function mousedown() {
       if ( !mousedown_node && !mousedown_link ) {
-        // allow panning if nothing is selected
         vis.call( d3.behavior.zoom().on( "zoom" ), rescale );
         return;
       }
@@ -88,6 +171,7 @@ $( function(){
           .attr( "class", "drag_line_hidden" );
 
         if ( !mouseup_node ) {
+          /*
 
           var point = d3.mouse(this),
             node1 = {x: point[0], y: point[1]},
@@ -100,6 +184,7 @@ $( function(){
           
           links.push({source: mousedown_node, target: node1});
           links.push({source: mousedown_node, target: node2});
+          */
         }
 
         redraw();
@@ -120,8 +205,8 @@ $( function(){
           .attr( "x2", function(d) { return d.target.x; } )
           .attr( "y2", function(d) { return d.target.y; } );
 
-      node.attr( "cx", function(d) { return d.x; } )
-          .attr( "cy", function(d) { return d.y; } );
+      node.attr( "x", function(d) { return d.x-pic_width/2; } )
+          .attr( "y", function(d) { return d.y-pic_height/2; } );
     }
 
     function rescale() {
@@ -159,9 +244,27 @@ $( function(){
 
       node = node.data( nodes );
 
-      node.enter().insert( "circle" )
+      node.enter().insert( "image" )
+          .attr( "xlink:href", function(d){
+            return d.thumbnail_url;
+          } )
           .attr( "class", "node" )
-          .attr( "r", 5 )
+          .attr( "width", pic_width )
+          .attr( "height", pic_height )
+          .on( "click", function(d){
+
+            var detail_dom = d3.select( "#detail_area" );
+
+            detail_dom.selectAll( "a,div" ).remove();
+            detail_dom.append( "a" )
+              .text( d.title )
+              .attr( "href", d.url );
+
+            detail_dom.append( "div" )
+              .text( d.description );
+
+            $( "#detail_area" ).show( 500 );
+          } )
           .on( "mousedown", function(d) {
               vis.call( d3.behavior.zoom().on("zoom"), null );
 
@@ -233,7 +336,6 @@ $( function(){
     }
 
     function keydown() {
-      console.log("test");
       if ( !selected_node && !selected_link ) return;
 
       switch ( d3.event.keyCode ){

@@ -1,6 +1,8 @@
 #force_net_area{
+	border: 	2px solid gray;
+	width: 		1000px;
+
 	.node {
-	  fill: #000;
 	  cursor: crosshair;
 	}
 
@@ -30,4 +32,14 @@
 	.link_selected {
 	  stroke: #ff7f0e;
 	}
+}
+
+#detail_area{
+	position: absolute;
+	top: 			50px;
+	left: 		50px;
+	background-color: white;
+	border-radius: 30px;
+	border: 	2px solid black;
+	padding: 	30px;
 }

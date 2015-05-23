@@ -147,7 +147,7 @@ class MoviesController < ApplicationController
 
     # 関連をCreate
     source_id = @movie.source_id
-    Relation.create(movie1_id: @movie.id, movie2_id: source_id, user_id: current_user.id)
+    Relation.create(movie1_id: source_id, movie2_id: @movie.id, user_id: current_user.id)
 
     res = make_response([@movie])
 

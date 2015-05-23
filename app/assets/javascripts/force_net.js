@@ -128,6 +128,7 @@ $( function(){
 
         if ( !mouseup_node ) {
           var result = prompt( "登録したい動画のURLを入力してください", "http://" );
+          var node = mousedown_node;
 
           if( result ){
 
@@ -135,10 +136,37 @@ $( function(){
               type: "POST",
               url: "/movies",
               data: {
-                movie:{ "url":        result }
+                movie:{
+                  "url":        result,
+                  "source_id":  mousedown_node.id
+                }
               },
               success: function( json ){
-                 alert( json );
+                console.log( json.data.movies[0] );
+                /*
+
+                if (!mouseup_node) {
+                  // add node
+                  var point = d3.mouse(this),
+                    node = {x: point[0], y: point[1]},
+                    n = nodes.push(node);
+
+                  // select new node
+                  selected_node = node;
+                  selected_link = null;
+                  
+                  // add link to mousedown node
+                  links.push({source: mousedown_node, target: node});
+                }
+                */
+
+                nodes.push( json.data.movies[0] );
+
+                movies_map[ json.data.movies[0].id ] = movies_map.size;
+                movies_map.size ++;
+
+
+                redraw();
               }
             });
 

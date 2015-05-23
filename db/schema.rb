@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150522114617) do
+ActiveRecord::Schema.define(version: 20150523023402) do
 
   create_table "ajax_tests", force: true do |t|
     t.string   "movie_id"
@@ -49,7 +49,7 @@ ActiveRecord::Schema.define(version: 20150522114617) do
   create_table "movies", force: true do |t|
     t.string   "movie_id"
     t.string   "title"
-    t.string   "description"
+    t.text     "description"
     t.string   "url"
     t.string   "thumbnail_url"
     t.string   "thumbnail_path"
@@ -141,6 +141,7 @@ ActiveRecord::Schema.define(version: 20150522114617) do
   create_table "youtube_categories", force: true do |t|
     t.string  "name"
     t.integer "category_id"
+    t.integer "youtube_category_id"
   end
 
   add_index "youtube_categories", ["category_id"], name: "index_youtube_categories_on_category_id", using: :btree

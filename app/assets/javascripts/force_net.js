@@ -7,9 +7,16 @@ $( function(){
   };
 
   $('form#search_movies').bind("ajax:success", function(evt, data, status, xhr){
-    $res_json = data;
-    
-    if( true ){
+    if( data.result ){
+      $( "#force_net_area>svg" ).remove();
+      
+      movies_map = {
+        size: 0
+      };
+      relations_map = {
+        size: 0
+      };
+
       var temp_data = {
         "result": true,
         "data": {
@@ -74,8 +81,6 @@ $( function(){
 
       show_force( temp_data.data );
     }
-
-    $( this ).remove();
   })
 
   function show_force( data ){

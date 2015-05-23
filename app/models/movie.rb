@@ -4,4 +4,6 @@ class Movie < ActiveRecord::Base
   belongs_to :category
   belongs_to :user
   acts_as_taggable
+
+  attr_accessor :keywords
 end

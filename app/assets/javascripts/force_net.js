@@ -1,6 +1,12 @@
 $( function(){
+  $('form#search_movies').bind("ajax:success", function(evt, data, status, xhr){
+    $res_json = data;
+    console.log(data.data)
+    
+    show_force();
+  })
 
-  if( $( "#force_net_area" )[ 0 ] ){
+  function show_force(){
     var width = 500,
     height = 500,
     color = d3.scale.category20();
@@ -50,6 +56,9 @@ $( function(){
         links = force.links(),
         node = vis.selectAll( ".node" ),
         link = vis.selectAll( ".link" );
+
+    d3.select(window)
+        .on("keydown", keydown);
 
     redraw();
 
@@ -172,7 +181,7 @@ $( function(){
               // redraw();
             })
           .on( "mouseup", function(d) { 
-              if ( mousedown_nod ) {
+              if ( mousedown_node ) {
                 mouseup_node = d; 
                 if ( mouseup_node == mousedown_node ) { resetMouseVars(); return; }
 
@@ -222,6 +231,7 @@ $( function(){
     }
 
     function keydown() {
+      console.log("test");
       if ( !selected_node && !selected_link ) return;
 
       switch ( d3.event.keyCode ){

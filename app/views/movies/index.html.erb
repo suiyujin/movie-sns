@@ -4,3 +4,8 @@
 </div>
 
 <%= link_to 'New Movie', new_movie_path %>
+
+<%= form_for( @movie, url: movies_search_path, remote: true, method: :get, html: { id: "search_movies" } ) do |f| %>
+  <%= f.text_field :keywords %>
+  <%= f.submit( "検索" ) %>
+<% end %>

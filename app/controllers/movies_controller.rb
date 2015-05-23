@@ -3,9 +3,36 @@ class MoviesController < ApplicationController
 
   respond_to :html
 
+  def search
+    @movie = Movie.new( movie_search_params )
+    keywords = @movie.keywords
+
+    # urlのみの場合はその動画があるか調べる
+    if keywords.blank? || keywords =~ /^\s+$/
+      result = ''
+    elsif keywords =~ /^http:\/\/[^\s]+$/
+      result = Movie.find_by(url: keywords)
+    elsif
+      query = keywords.split(' ').map { |keyword| "title like '%#{keyword}%'" }
+      result = Movie.where(query.join(' AND '))
+    end
+
+    if result.blank?
+      res = {
+        result: false,
+        data: nil
+      }
+    else
+      res = {
+        result: true,
+        data: result
+      }
+    end
+    render json: res
+  end
+
   def index
-    @movies = Movie.all
-    respond_with(@movies)
+    @movie = Movie.new
   end
 
   def show
@@ -43,5 +70,9 @@ class MoviesController < ApplicationController
 
     def movie_params
       params.require(:movie).permit(:movie_id, :title, :description, :url, :thumbnail_url, :thumbnail_path)
+    end
+
+    def movie_search_params
+      params.require(:movie).permit(:keywords)
     end
 end

@@ -79,9 +79,11 @@ $( function(){
   })
 
   function show_force( data ){
-    var width = 500,
-    height = 500,
-    color = d3.scale.category20();
+    var width = 1000;
+    var height = 600;
+    var color = d3.scale.category20();
+    var pic_width = 120;
+    var pic_height = 60;
 
     var selected_node = null;
     var selected_link = null;
@@ -113,7 +115,7 @@ $( function(){
         .size( [ width, height ] )
         .nodes( data.movies )
         .links( data.relations )
-        .linkDistance( 50 )
+        .linkDistance( 200 )
         .charge( -200 )
         .on( "tick", tick );
 
@@ -136,7 +138,6 @@ $( function(){
 
     function mousedown() {
       if ( !mousedown_node && !mousedown_link ) {
-        // allow panning if nothing is selected
         vis.call( d3.behavior.zoom().on( "zoom" ), rescale );
         return;
       }
@@ -158,6 +159,7 @@ $( function(){
           .attr( "class", "drag_line_hidden" );
 
         if ( !mouseup_node ) {
+          /*
 
           var point = d3.mouse(this),
             node1 = {x: point[0], y: point[1]},
@@ -170,6 +172,7 @@ $( function(){
           
           links.push({source: mousedown_node, target: node1});
           links.push({source: mousedown_node, target: node2});
+          */
         }
 
         redraw();
@@ -190,8 +193,8 @@ $( function(){
           .attr( "x2", function(d) { return d.target.x; } )
           .attr( "y2", function(d) { return d.target.y; } );
 
-      node.attr( "cx", function(d) { return d.x; } )
-          .attr( "cy", function(d) { return d.y; } );
+      node.attr( "x", function(d) { return d.x-pic_width/2; } )
+          .attr( "y", function(d) { return d.y-pic_height/2; } );
     }
 
     function rescale() {
@@ -229,9 +232,13 @@ $( function(){
 
       node = node.data( nodes );
 
-      node.enter().insert( "circle" )
+      node.enter().insert( "image" )
+          .attr( "xlink:href", function(d){
+            return d.thumbnail_url;
+          } )
           .attr( "class", "node" )
-          .attr( "r", 5 )
+          .attr( "width", pic_width )
+          .attr( "height", pic_height )
           .on( "mousedown", function(d) {
               vis.call( d3.behavior.zoom().on("zoom"), null );
 

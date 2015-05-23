@@ -11,7 +11,7 @@ class MoviesController < ApplicationController
     if keywords.blank? || keywords =~ /^\s+$/
       results = ''
     elsif keywords =~ /^(http:|https:)\/\/[^\s]+$/
-      results = Movie.find_by(url: keywords)
+      results = [Movie.find_by(url: keywords)]
     elsif
       query = keywords.split(' ').map { |keyword| "title like '%#{keyword}%'" }
       results = Movie.where(query.join(' AND '))

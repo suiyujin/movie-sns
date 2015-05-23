@@ -66,6 +66,15 @@ Relation.create(movie1_id: 1,
                movie2_id: 2,
                user_id: 1)
 
+CSV.foreach('db/csv_data/comments.csv') do |row|
+  Comment.create(title: row[0],
+                comment: row[1],
+                commentable_id: row[2],
+                commentable_type: row[3],
+                user_id: row[4],
+                role: row[5])
+end
+
 Comment.create(title: "ラブライブ最高！",
               comment: "ラブライブ大好き！
               ラブライブ大好き！",

@@ -78,6 +78,8 @@ class MoviesController < ApplicationController
         }
       }
     end
+
+    binding.pry
     render json: res
   end
 

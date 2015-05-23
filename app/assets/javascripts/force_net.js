@@ -6,10 +6,16 @@ $( function(){
     size: 0
   };
 
-  $('form#search_movies').bind("ajax:success", function(evt, data, status, xhr){
+  $( "#detail_area" ).hide();
+  $( "#detail_area>button" )
+    .click( function(){
+      $( "#detail_area" ).hide( 500 );
+    } );
+
+  $( 'form#search_movies' ).bind( "ajax:success", function( evt, data, status, xhr ){
     if( data.result ){
       $( "#force_net_area>svg" ).remove();
-      
+
       movies_map = {
         size: 0
       };
@@ -244,6 +250,20 @@ $( function(){
           .attr( "class", "node" )
           .attr( "width", pic_width )
           .attr( "height", pic_height )
+          .on( "click", function(d){
+
+            var detail_dom = d3.select( "#detail_area" );
+
+            detail_dom.selectAll( "a div" ).remove();
+            detail_dom.append( "a" )
+              .text( d.title )
+              .attr( "href", d.url );
+
+            detail_dom.append( "div" )
+              .text( d.description );
+
+            $( "#detail_area" ).show( 500 );
+          } )
           .on( "mousedown", function(d) {
               vis.call( d3.behavior.zoom().on("zoom"), null );
 

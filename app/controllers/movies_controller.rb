@@ -101,6 +101,43 @@ class MoviesController < ApplicationController
 
   def create
     @movie = Movie.new(movie_params)
+
+    @movie.user_id = current_user.id
+
+    # APIを叩いて情報取得
+    if @movie.url.include?('youtube')
+      movie_id = @movie.url.match(/https:\/\/www.youtube.com\/watch\?v=(\w+)$/)[1]
+      response = YoutubeApi.request_ssl(movie_id)
+
+      title = response["items"][0]["snippet"]["title"]
+      description = response["items"][0]["snippet"]["description"]
+      thumbnail_url = response["items"][0]["snippet"]["thumbnails"]["medium"]["url"]
+      youtube_category_id = response["items"][0]["snippet"]["categoryId"]
+
+      category_id = YoutubeCategory.find_by(youtube_category_id: youtube_category_id).category_id
+
+    else @movie.url.include?('nicovideo')
+      movie_id = @movie.url.match(/http:\/\/www.nicovideo.jp\/watch\/(\w+)/)[1]
+      response = NicovideoApi.request(movie_id)
+
+      title = response["nicovideo_thumb_response"]["thumb"]["title"]["__content__"]
+      description = response["nicovideo_thumb_response"]["thumb"]["description"]["__content__"]
+      category_name = ''
+      tags = response["nicovideo_thumb_response"]["thumb"]["tags"]["tag"].map do |tag|
+        category_name = tag["__content__"] if tag["category"]
+        tag["__content__"]
+      end
+
+      thumbnail_url = response["nicovideo_thumb_response"]["thumb"]["thumbnail_url"]["__content__"]
+      category_id = NicovideoCategory.find_by(name: category_name).category_id
+    end
+
+    @movie.movie_id = movie_id
+    @movie.title = title
+    @movie.description = description
+    @movie.thumbnail_url = thumbnail_url
+    @movie.category_id = category_id
+
     @movie.save
     respond_with(@movie)
   end

@@ -5,5 +5,5 @@ class Movie < ActiveRecord::Base
   belongs_to :user
   acts_as_taggable
 
-  attr_accessor :keywords
+  attr_accessor :keywords, :source_id
 end

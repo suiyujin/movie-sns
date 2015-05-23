@@ -1,17 +1,58 @@
 $( function(){
-  $('form#search_movies').bind("ajax:success", function(evt, data, status, xhr){
-    $res_json = data;
-    console.log(data.data)
-    
-    show_force();
+  var movies_map = {
+    size: 0
+  };
+  var relations_map = {
+    size: 0
+  };
 
-    $( this ).remove();
+  $( "#detail_area" ).hide();
+  $( "#detail_area>button" )
+    .click( function(){
+      $( "#detail_area" ).hide( 500 );
+    } );
+
+  $( 'form#search_movies' ).bind( "ajax:success", function( evt, data, status, xhr ){
+    if( data.result ){
+      $( "#force_net_area>svg" ).remove();
+
+      movies_map = {
+        size: 0
+      };
+      relations_map = {
+        size: 0
+      };
+
+      data.data.movies.forEach( function( movie, index ){
+        movies_map[ movie.id ] = movies_map.size;
+        movies_map.size ++;
+      });
+
+      var relations = [];
+
+      data.data.relations.forEach( function( relation, index ){
+        relations_map[ relation.id ] = relations_map.size;
+        relations_map.size ++;
+
+        relations.push( {
+          "source": movies_map[ relation.movie1_id ],
+          "target": movies_map[ relation.movie2_id ],
+          "comments": relation.comments
+        } );
+      });
+
+      data.data.relations = relations;
+
+      show_force( data.data );
+    }
   })
 
-  function show_force(){
-    var width = 500,
-    height = 500,
-    color = d3.scale.category20();
+  function show_force( graph ){
+    var width = 1000;
+    var height = 600;
+    var color = d3.scale.category20();
+    var pic_width = 120;
+    var pic_height = 60;
 
     var selected_node = null;
     var selected_link = null;
@@ -41,10 +82,10 @@ $( function(){
 
     var force = d3.layout.force()
         .size( [ width, height ] )
-        .nodes( [{ "name":"test"}, {"name":"test"}] )
-        .links( [{ "source":0, "target":1 }] )
-        .linkDistance( 50 )
-        .charge( -200 )
+        .nodes( graph.movies )
+        .links( graph.relations )
+        .linkDistance( 200 )
+        .charge( -800 )
         .on( "tick", tick );
 
     var drag_line = vis.append( "line" )
@@ -66,7 +107,6 @@ $( function(){
 
     function mousedown() {
       if ( !mousedown_node && !mousedown_link ) {
-        // allow panning if nothing is selected
         vis.call( d3.behavior.zoom().on( "zoom" ), rescale );
         return;
       }
@@ -88,18 +128,52 @@ $( function(){
           .attr( "class", "drag_line_hidden" );
 
         if ( !mouseup_node ) {
+          var result = prompt( "登録したい動画のURLを入力してください", "http://" );
+          var node = mousedown_node;
 
-          var point = d3.mouse(this),
-            node1 = {x: point[0], y: point[1]},
-            n = nodes.push(node1);
-            node2 = {x: point[0], y: point[1]+1},
-            n = nodes.push(node2);
+          if( result ){
 
-          selected_node = node;
-          selected_link = null;
-          
-          links.push({source: mousedown_node, target: node1});
-          links.push({source: mousedown_node, target: node2});
+            $.ajax({
+              type: "POST",
+              url: "/movies",
+              data: {
+                movie:{
+                  "url":        result,
+                  "source_id":  mousedown_node.id
+                }
+              },
+              success: function( json ){
+                console.log( json.data.movies[0] );
+                /*
+
+                if (!mouseup_node) {
+                  // add node
+                  var point = d3.mouse(this),
+                    node = {x: point[0], y: point[1]},
+                    n = nodes.push(node);
+
+                  // select new node
+                  selected_node = node;
+                  selected_link = null;
+                  
+                  // add link to mousedown node
+                  links.push({source: mousedown_node, target: node});
+                }
+                */
+
+                nodes.push( json.data.movies[0] );
+
+                movies_map[ json.data.movies[0].id ] = movies_map.size;
+                movies_map.size ++;
+
+
+                redraw();
+              }
+            });
+
+          }else{
+            console.log(" CANCEL が押された");
+          }
         }
 
         redraw();
@@ -120,8 +194,8 @@ $( function(){
           .attr( "x2", function(d) { return d.target.x; } )
           .attr( "y2", function(d) { return d.target.y; } );
 
-      node.attr( "cx", function(d) { return d.x; } )
-          .attr( "cy", function(d) { return d.y; } );
+      node.attr( "x", function(d) { return d.x-pic_width/2; } )
+          .attr( "y", function(d) { return d.y-pic_height/2; } );
     }
 
     function rescale() {
@@ -141,6 +215,11 @@ $( function(){
 
       link.enter().insert( "line", ".node" )
           .attr( "class", "link" )
+          .style( "stroke-width", function(d){
+            if( d.comments.length > 0 )
+              return 20;
+            return 5;
+          } )
           .on( "mousedown", function(d){ 
               mousedown_link = d; 
               if (mousedown_link == selected_link) selected_link = null;
@@ -150,6 +229,20 @@ $( function(){
             } )
           .on( "mouseover", function(d){
             // todo: いいね、悪いねとかを表示する
+          } )
+          .on( "click", function(d){
+            var detail_dom = d3.select( "#detail_area" )
+              .style( "top", ( d.source.y + d.target.y )/2  + "px" )
+              .style( "left", ( d.source.x + d.target.x )/2 + "px" );
+
+            detail_dom.selectAll( "div" ).remove();
+
+            d.comments.forEach( function( comment ){
+              detail_dom.append( "div" )
+                .text( comment.comment );
+            } );
+
+            $( "#detail_area" ).show( 500 );
           } );
 
       link.exit().remove();
@@ -159,9 +252,28 @@ $( function(){
 
       node = node.data( nodes );
 
-      node.enter().insert( "circle" )
+      node.enter().insert( "image" )
+          .attr( "xlink:href", function(d){
+            return d.thumbnail_url;
+          } )
           .attr( "class", "node" )
-          .attr( "r", 5 )
+          .attr( "width", pic_width )
+          .attr( "height", pic_height )
+          .on( "click", function(d){
+            var detail_dom = d3.select( "#detail_area" )
+              .style( "top", d.y + "px" )
+              .style( "left", d.x + "px" );
+
+            detail_dom.selectAll( "a,div" ).remove();
+            detail_dom.append( "a" )
+              .text( d.title )
+              .attr( "href", d.url );
+
+            detail_dom.append( "div" )
+              .text( d.description );
+
+            $( "#detail_area" ).show( 500 );
+          } )
           .on( "mousedown", function(d) {
               vis.call( d3.behavior.zoom().on("zoom"), null );
 
@@ -233,7 +345,6 @@ $( function(){
     }
 
     function keydown() {
-      console.log("test");
       if ( !selected_node && !selected_link ) return;
 
       switch ( d3.event.keyCode ){

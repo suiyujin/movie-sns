@@ -17,6 +17,12 @@ class MoviesController < ApplicationController
       results = Movie.where(query.join(' AND '))
     end
 
+    res = make_response(results)
+
+    render json: res
+  end
+
+  def make_response(results)
     # 関連があれば、関連先の動画を追加
     results.each do |result|
       result.relations1.each do |relation1|
@@ -78,8 +84,7 @@ class MoviesController < ApplicationController
         }
       }
     end
-
-    render json: res
+    res
   end
 
   def index
@@ -138,7 +143,14 @@ class MoviesController < ApplicationController
     @movie.category_id = category_id
 
     @movie.save
-    respond_with(@movie)
+
+    # 関連をCreate
+    source_id = @movie.source_id
+    Relation.create(movie1_id: @movie.id, movie2_id: source_id, user_id: current_user.id)
+
+    res = make_response([@movie])
+
+    render json: res
   end
 
   def update
@@ -157,7 +169,7 @@ class MoviesController < ApplicationController
     end
 
     def movie_params
-      params.require(:movie).permit(:movie_id, :title, :description, :url, :thumbnail_url, :thumbnail_path)
+      params.require(:movie).permit(:movie_id, :title, :description, :url, :thumbnail_url, :thumbnail_path, :source_id)
     end
 
     def movie_search_params

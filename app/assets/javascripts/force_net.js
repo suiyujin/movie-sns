@@ -254,8 +254,7 @@ $( function(){
 
             var detail_dom = d3.select( "#detail_area" );
 
-            detail_dom.selectAll( "a" ).remove();
-            detail_dom.selectAll( "div" ).remove();
+            detail_dom.selectAll( "a,div" ).remove();
             detail_dom.append( "a" )
               .text( d.title )
               .attr( "href", d.url );

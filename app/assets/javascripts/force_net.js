@@ -4,6 +4,8 @@ $( function(){
     console.log(data.data)
     
     show_force();
+
+    $( this ).remove();
   })
 
   function show_force(){

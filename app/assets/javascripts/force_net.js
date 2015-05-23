@@ -1,14 +1,84 @@
 $( function(){
+  var movies_map = {
+    size: 0
+  };
+  var relations_map = {
+    size: 0
+  };
+
   $('form#search_movies').bind("ajax:success", function(evt, data, status, xhr){
     $res_json = data;
-    console.log(data.data)
     
-    show_force();
+    if( true ){
+      var temp_data = {
+        "result": true,
+        "data": {
+          movies: [
+            {
+              "id":     1,
+              "title":        "【ラブライブ！】Printemps「Pure girls project」試聴動画",
+              "description":  "『ラブライブ！』ユニットシングル 2nd session Pure girls project Printemps〜高坂穂乃果(新田恵海)、南ことり(内田 彩)、小泉花陽(久保ユリカ) ",
+              "url":          "https://www.youtube.com/watch?v=gBVCa8rZmGg",
+              "thumbnail_url":"https://i.ytimg.com/vi/gBVCa8rZmGg/mqdefault.jpg"
+            },
+            {
+              "id":     2,
+              "title":        "【ラブライブ！】Printemps「Pure girls project」試聴動画",
+              "description":  "『ラブライブ！』ユニットシングル 2nd session Pure girls project Printemps〜高坂穂乃果(新田恵海)、南ことり(内田 彩)、小泉花陽(久保ユリカ) ",
+              "url":          "https://www.youtube.com/watch?v=gBVCa8rZmGg",
+              "thumbnail_url":"https://i.ytimg.com/vi/gBVCa8rZmGg/mqdefault.jpg"
+            },
+            {
+              "id":     3,
+              "title":        "【ラブライブ！】Printemps「Pure girls project」試聴動画",
+              "description":  "『ラブライブ！』ユニットシングル 2nd session Pure girls project Printemps〜高坂穂乃果(新田恵海)、南ことり(内田 彩)、小泉花陽(久保ユリカ) ",
+              "url":          "https://www.youtube.com/watch?v=gBVCa8rZmGg",
+              "thumbnail_url":"https://i.ytimg.com/vi/gBVCa8rZmGg/mqdefault.jpg"
+            }
+          ],
+          relations:[
+            {
+              "movie1_id":    1,
+              "movie2_id":    2
+            },
+            {
+              "movie1_id":    2,
+              "movie2_id":    3
+            },
+            {
+              "movie1_id":    3,
+              "movie2_id":    1
+            }
+          ]
+        }
+      };
+
+      temp_data.data.movies.forEach( function( movie, index ){
+        movies_map[ movie.id ] = movies_map.size;
+        movies_map.size ++;
+      });
+
+      var relations = [];
+
+      temp_data.data.relations.forEach( function( relation, index ){
+        relations_map[ relation.id ] = relations_map.size;
+        relations_map.size ++;
+
+        relations.push( {
+          "source": movies_map[ relation.movie1_id ],
+          "target": movies_map[ relation.movie2_id ]
+        } );
+      });
+
+      temp_data.data.relations = relations;
+
+      show_force( temp_data.data );
+    }
 
     $( this ).remove();
   })
 
-  function show_force(){
+  function show_force( data ){
     var width = 500,
     height = 500,
     color = d3.scale.category20();
@@ -41,8 +111,8 @@ $( function(){
 
     var force = d3.layout.force()
         .size( [ width, height ] )
-        .nodes( [{ "name":"test"}, {"name":"test"}] )
-        .links( [{ "source":0, "target":1 }] )
+        .nodes( data.movies )
+        .links( data.relations )
         .linkDistance( 50 )
         .charge( -200 )
         .on( "tick", tick );
@@ -233,7 +303,6 @@ $( function(){
     }
 
     function keydown() {
-      console.log("test");
       if ( !selected_node && !selected_link ) return;
 
       switch ( d3.event.keyCode ){
